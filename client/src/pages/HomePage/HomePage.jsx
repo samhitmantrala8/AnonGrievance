@@ -215,17 +215,17 @@ const HomePage = () => {
 
                             <div className={`flex  items-center justify-center mb-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full`}>
                                 <div className="flex-1  transition duration-300 ease-in-out rounded-l-full">
-                                    <button onClick={() => addUpvote(message._id)} className={`${isDarkMode ? 'text-white' : 'text-black'} flex ${isDarkMode ? 'hover-bg-gray-900' : 'hover:bg-gray-300'} justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 rounded-l-full w-full`}>
+                                    <button onClick={() => addUpvote(message._id)} className={`${isDarkMode ? 'text-white' : 'text-black'} flex ${isDarkMode ? 'hover:bg-gray-900' : 'hover:bg-gray-300'} justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 rounded-l-full w-full`}>
                                         <span>{hasUpvoted ? <AiFillLike /> : <AiOutlineLike />}</span><span> {upvotesCount}</span>
                                     </button>
                                 </div>
                                 <div className="flex-1  transition duration-300 ease-in-out">
-                                    <button onClick={() => addDownvote(message._id)} className={`${isDarkMode ? 'text-white' : 'text-black'} ${isDarkMode ? 'hover-bg-gray-900' : 'hover:bg-gray-300'} flex justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 w-full`}>
+                                    <button onClick={() => addDownvote(message._id)} className={`${isDarkMode ? 'text-white' : 'text-black'} ${isDarkMode ? 'hover:bg-gray-900' : 'hover:bg-gray-300'} flex justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 w-full`}>
                                         <span>{hasDownvoted ? <AiFillDislike /> : <AiOutlineDislike />}</span><span> {downvotesCount}</span>
                                     </button>
                                 </div>
                                 <div className="flex-1  transition duration-300 ease-in-out rounded-r-full">
-                                    <button className={`${isDarkMode ? 'text-white' : 'text-black'} flex ${isDarkMode ? 'hover-bg-gray-900' : 'hover:bg-gray-300'} justify-center items-center gap-2 text-sm md:text-lg transition duration-300 ease-in-out font-bold py-2 px-4 rounded-r-full w-full`} onClick={() => toggleComments(message._id)}>
+                                    <button className={`${isDarkMode ? 'text-white' : 'text-black'} flex ${isDarkMode ? 'hover:bg-gray-900' : 'hover:bg-gray-300'} justify-center items-center gap-2 text-sm md:text-lg transition duration-300 ease-in-out font-bold py-2 px-4 rounded-r-full w-full`} onClick={() => toggleComments(message._id)}>
                                         Comments
                                     </button>
                                 </div>
@@ -243,9 +243,9 @@ const HomePage = () => {
                             </button>
                             {/* Display comments */}
                             {selectedMessageComments[message._id] && selectedMessageComments[message._id].length > 0 && selectedMessageComments[message._id].map((comment, commentIndex) => (
-                                <div key={commentIndex} className={`${isDarkMode ? 'bg-gray-900' : 'bg-gray-400 text-black'} p-2 rounded-lg mb-2 mt-3`}>
-                                    <p className={`text-white`}>{comment.text}</p>
-                                    <small className='text-gray-600'>Commented by: {comment.username}</small>
+                                <div key={commentIndex} className={`${isDarkMode ? 'bg-gray-700 border-white' : 'bg-gray-300 border-black'} p-2 rounded-lg mb-2 mt-3 border-2`}>
+                                    <p className={`${isDarkMode ? 'text-white' : 'text-black'}`}>{comment.text}</p>
+                                    <small className='text-gray-900'>Commented by: {comment.username}</small>
                                 </div>
                             ))}
                         </div>

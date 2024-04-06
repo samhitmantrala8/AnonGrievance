@@ -30,7 +30,7 @@ function Navbar() {
   };
 
   return (
-    <nav className={`fixed w-full z-20 top-0 start-0 border-b ${isDarkMode ? 'bg-gray-900 border-gray-600' : 'bg-white border-gray-300'}`}>
+    <nav className={`fixed w-full z-20 top-0 start-0 border-b ${isDarkMode ? 'bg-gray-900 border-gray-600' : 'bg-slate-200 border-gray-300'}`}>
 
       <div className={`max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 ${isDarkMode ? 'text-white' : 'text-black'}`}>
         <div className='flex justify-center items-center gap-2 cursor-pointer'>
