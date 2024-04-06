@@ -3,6 +3,11 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { AiOutlineLike, AiOutlineDislike, AiOutlineDelete, AiFillLike, AiFillDislike } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom'
+import { HfInference } from "@huggingface/inference";
+
+const HF_TOKEN = "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";
+
+const inference = new HfInference(HF_TOKEN);
 
 const HomePage = () => {
 
@@ -39,11 +44,31 @@ const HomePage = () => {
             formData.append('username', username);
             formData.append('description', description);
             formData.append('media', media);
-
-            await axios.post('http://localhost:8800/api/messages/post', formData);
-            setDescription('');
-            setMedia(null);
-            fetchMessages();
+            const pred = await inference.textClassification({
+                model: 'Utkarsh03/hb_111',
+                inputs: description
+            });
+            pred.map((item, index) => {
+                console.log(`${item.label}, ${item.score}`);
+                if ( (item.label === 'POSITIVE' && item.score < 0.5)) {
+                    
+                    alert('Please post a positive message');
+                    return;
+                                  
+                    
+                }
+                else if((item.label === 'NEGATIVE' && item.score > 0.5))
+                {
+                    console.log('')
+                } else {
+                    console.log('Posting message');
+                    axios.post('http://localhost:8800/api/messages/post', formData);
+                    setDescription('');
+                    setMedia(null);
+                    fetchMessages();
+                }
+            });
+            
         } catch (error) {
             console.error('Error posting message:', error);
         }
@@ -81,13 +106,34 @@ const HomePage = () => {
 
     const addComment = async (id) => {
         try {
-            await axios.put(`http://localhost:8800/api/messages/comment/${id}`, { username, text: commentInput[id] });
-            fetchMessages();
-            setCommentInput({ ...commentInput, [id]: '' });  // Clear the comment input after adding comment
+            const pred = await inference.textClassification({
+                model: 'Utkarsh03/hb_111',
+                inputs: commentInput[id]
+            });
+            let vflag = true;
+            pred.forEach((item) => {
+                console.log(`${item.label}, ${item.score}`);
+                if ((item.label === 'POSITIVE' && item.score < 0.5)) {
+                    vflag = false;
+                   
+                    alert('Please post a positive comment');
+                    return;
+                }
+                else if((item.label === 'NEGATIVE' && item.score > 0.5) )
+                {
+                    console.log('')
+                }
+            });
+            if (vflag) {
+                await axios.put(`http://localhost:8800/api/messages/comment/${id}`, { username, text: commentInput[id] });
+                fetchMessages();
+                setCommentInput({ ...commentInput, [id]: '' });
+            } // Clear the comment input after adding comment
         } catch (error) {
             console.error('Error adding comment:', error);
         }
     };
+    
 
     const [commentInputs, setCommentInputs] = useState({});
     const [selectedMessageComments, setSelectedMessageComments] = useState({});
@@ -128,16 +174,8 @@ const HomePage = () => {
             {/* <h1 className="text-4xl mb-4">Message Board</h1> */}
 
             {/* Post Message Form */}
-            <div className='flex flex-col justify-center items-center bg-gray-800 p-6 rounded-lg mb-6 md:w-[500px] lg:w-[600px]'>
-                <h3 className="text-xl md:text-2xl mb-2 font-mono" style={{
-                    backgroundImage: 'linear-gradient(to right, red, orange, yellow, green, )',
-                    WebkitBackgroundClip: 'text',
-                    backgroundClip: 'text',
-                    color: 'transparent'
-                }}>
-                    Post a Complaint
-                </h3>
-
+            <div className='flex flex-col justify-center items-center bg-gray-800 p-6 rounded-lg mb-6 md:w-[500px] lg:w-[600px] '>
+                <h2 className="text-2xl mb-4 text-white">Post a Message</h2>
                 <input
                     type="text"
                     placeholder="Enter description"
@@ -161,20 +199,10 @@ const HomePage = () => {
                 {messages.map((message, index) => {
                     const hasUpvoted = message.upvotes.includes(username);
                     const hasDownvoted = message.downvotes.includes(username);
-                    const upvotesCount = message.upvotes.length;
-                    const downvotesCount = message.downvotes.length;
                     return (
                         <div key={index} className='bg-gray-800 p-4 rounded-lg mb-4 w-[300px] md:w-[500px] lg:w-[600px]'>
-                            <h3 className="text-sm mb-2 font-mono" style={{
-                                backgroundImage: 'linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)',
-                                WebkitBackgroundClip: 'text',
-                                backgroundClip: 'text',
-                                color: 'transparent'
-                            }}>
-                                {message.username}
-                            </h3>
-
-                            <p className="mb-2 text-md md:text-xl">{message.description}</p>
+                            <h3 className="text-sm mb-2">{message.username}</h3>
+                            <p className="mb-2 text-xl">{message.description}</p>
 
                             <div className='w-full'>
                                 {message.media && (
@@ -189,37 +217,33 @@ const HomePage = () => {
                                 )}
                             </div>
 
-                            <div className="flex items-center justify-center mb-4 bg-gray-900 rounded-full">
-                                <div className="flex-1 hover:bg-gray-600 transition duration-300 ease-in-out rounded-l-full">
-                                    <button onClick={() => addUpvote(message._id)} className={`text-white flex justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 rounded-l-full w-full`}>
-                                        <span>{hasUpvoted ? <AiFillLike /> : <AiOutlineLike />}</span><span> {upvotesCount}</span>
-                                    </button>
-                                </div>
-                                <div className="flex-1 hover:bg-gray-600 transition duration-300 ease-in-out">
-                                    <button onClick={() => addDownvote(message._id)} className={`text-white flex justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 w-full`}>
-                                        <span>{hasDownvoted ? <AiFillDislike /> : <AiOutlineDislike />}</span><span> {downvotesCount}</span>
-                                    </button>
-                                </div>
-                                <div className="flex-1 hover:bg-gray-600 transition duration-300 ease-in-out rounded-r-full">
-                                    <button className={`text-white flex justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 rounded-r-full w-full`} onClick={() => toggleComments(message._id)}>
-                                        Comments
-                                    </button>
-                                </div>
+                            <div className="flex items-center justify-center mb-4 bg-gray-900 rounded-full gap-3">
+                                {/* <button onClick={() => deleteMessage(message._id)} className="text-white font-bold py-2 px-4 rounded-full mr-2">
+                                    <AiOutlineDelete />
+                                </button> */}
+                                <button onClick={() => addUpvote(message._id)} className={`text-white hover:bg-gray-600 transition duration-300 ease-in-out font-bold py-2 px-4 rounded-full mr-2`}>
+                                    {hasUpvoted ? <AiFillLike /> : <AiOutlineLike />}
+                                </button>
+                                <button onClick={() => addDownvote(message._id)} className={`text-white hover:bg-gray-600 transition duration-300 ease-in-out font-bold py-2 px-4 rounded-full mr-2`}>
+                                    {hasDownvoted ? <AiFillDislike /> : <AiOutlineDislike />}
+                                </button>
+                                <button className={`text-white hover:bg-gray-600 transition duration-300 ease-in-out font-bold py-2 px-4 rounded-full mr-2`} onClick={() => toggleComments(message._id)}>
+                                    Comments
+                                </button>
                             </div>
-
                             <input
                                 type="text"
                                 placeholder="Add comment"
                                 value={commentInput[message._id] || ''}
                                 onChange={(e) => setCommentInput({ ...commentInput, [message._id]: e.target.value })}
-                                className='border-2 h-7 md:h-11 rounded-md bg-gray-300 px-3 py-2 text-gray-800 w-full mb-2'
+                                className='border-2 rounded-md bg-gray-300 px-3 py-2 text-gray-800 w-full mb-2'
                             />
-                            <button onClick={() => addComment(message._id)} className="bg-blue-500 font-serif hover:bg-blue-700 text-white font-bold py-1 md:py-2 px-4 text-sm md:text-md rounded">
+                            <button onClick={() => addComment(message._id)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Add Comment
                             </button>
                             {/* Display comments */}
                             {selectedMessageComments[message._id] && selectedMessageComments[message._id].length > 0 && selectedMessageComments[message._id].map((comment, commentIndex) => (
-                                <div key={commentIndex} className='bg-gray-900 p-2 rounded-lg mb-2 mt-3 font-mono'>
+                                <div key={commentIndex} className='bg-gray-900 p-2 rounded-lg mb-2 mt-3'>
                                     <p className='text-white'>{comment.text}</p>
                                     <small className='text-gray-600'>Commented by: {comment.username}</small>
                                 </div>
