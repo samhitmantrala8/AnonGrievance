@@ -50,15 +50,14 @@ const HomePage = () => {
             });
             pred.map((item, index) => {
                 console.log(`${item.label}, ${item.score}`);
-                if ( (item.label === 'POSITIVE' && item.score < 0.5)) {
-                    
+                if ((item.label === 'POSITIVE' && item.score < 0.5)) {
+
                     alert('Please post a positive message');
                     return;
-                                  
-                    
+
+
                 }
-                else if((item.label === 'NEGATIVE' && item.score > 0.5))
-                {
+                else if ((item.label === 'NEGATIVE' && item.score > 0.5)) {
                     console.log('')
                 } else {
                     console.log('Posting message');
@@ -68,7 +67,7 @@ const HomePage = () => {
                     fetchMessages();
                 }
             });
-            
+
         } catch (error) {
             console.error('Error posting message:', error);
         }
@@ -115,12 +114,11 @@ const HomePage = () => {
                 console.log(`${item.label}, ${item.score}`);
                 if ((item.label === 'POSITIVE' && item.score < 0.5)) {
                     vflag = false;
-                   
+
                     alert('Please post a positive comment');
                     return;
                 }
-                else if((item.label === 'NEGATIVE' && item.score > 0.5) )
-                {
+                else if ((item.label === 'NEGATIVE' && item.score > 0.5)) {
                     console.log('')
                 }
             });
@@ -133,7 +131,7 @@ const HomePage = () => {
             console.error('Error adding comment:', error);
         }
     };
-    
+
 
     const [commentInputs, setCommentInputs] = useState({});
     const [selectedMessageComments, setSelectedMessageComments] = useState({});
@@ -199,6 +197,10 @@ const HomePage = () => {
                 {messages.map((message, index) => {
                     const hasUpvoted = message.upvotes.includes(username);
                     const hasDownvoted = message.downvotes.includes(username);
+
+                    // Count the number of upvotes and downvotes
+                    const upvotesCount = message.upvotes.length;
+                    const downvotesCount = message.downvotes.length;
                     return (
                         <div key={index} className='bg-gray-800 p-4 rounded-lg mb-4 w-[300px] md:w-[500px] lg:w-[600px]'>
                             <h3 className="text-sm mb-2">{message.username}</h3>
@@ -217,20 +219,24 @@ const HomePage = () => {
                                 )}
                             </div>
 
-                            <div className="flex items-center justify-center mb-4 bg-gray-900 rounded-full gap-3">
-                                {/* <button onClick={() => deleteMessage(message._id)} className="text-white font-bold py-2 px-4 rounded-full mr-2">
-                                    <AiOutlineDelete />
-                                </button> */}
-                                <button onClick={() => addUpvote(message._id)} className={`text-white hover:bg-gray-600 transition duration-300 ease-in-out font-bold py-2 px-4 rounded-full mr-2`}>
-                                    {hasUpvoted ? <AiFillLike /> : <AiOutlineLike />}
-                                </button>
-                                <button onClick={() => addDownvote(message._id)} className={`text-white hover:bg-gray-600 transition duration-300 ease-in-out font-bold py-2 px-4 rounded-full mr-2`}>
-                                    {hasDownvoted ? <AiFillDislike /> : <AiOutlineDislike />}
-                                </button>
-                                <button className={`text-white hover:bg-gray-600 transition duration-300 ease-in-out font-bold py-2 px-4 rounded-full mr-2`} onClick={() => toggleComments(message._id)}>
-                                    Comments
-                                </button>
+                            <div className="flex items-center justify-center mb-4 bg-gray-900 rounded-full">
+                                <div className="flex-1 hover:bg-gray-600 transition duration-300 ease-in-out rounded-l-full">
+                                    <button onClick={() => addUpvote(message._id)} className={`text-white flex justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 rounded-l-full w-full`}>
+                                        <span>{hasUpvoted ? <AiFillLike /> : <AiOutlineLike />}</span><span> {upvotesCount}</span>
+                                    </button>
+                                </div>
+                                <div className="flex-1 hover:bg-gray-600 transition duration-300 ease-in-out">
+                                    <button onClick={() => addDownvote(message._id)} className={`text-white flex justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 w-full`}>
+                                        <span>{hasDownvoted ? <AiFillDislike /> : <AiOutlineDislike />}</span><span> {downvotesCount}</span>
+                                    </button>
+                                </div>
+                                <div className="flex-1 hover:bg-gray-600 transition duration-300 ease-in-out rounded-r-full">
+                                    <button className={`text-white flex justify-center items-center gap-2 text-sm md:text-lg transition duration-300 ease-in-out font-bold py-2 px-4 rounded-r-full w-full`} onClick={() => toggleComments(message._id)}>
+                                        Comments
+                                    </button>
+                                </div>
                             </div>
+
                             <input
                                 type="text"
                                 placeholder="Add comment"
