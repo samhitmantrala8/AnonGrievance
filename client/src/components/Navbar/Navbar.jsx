@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import logoImg from '../../../public/favi.png'
+import logoImg from '/favi.png'
 
 function Navbar() {
 

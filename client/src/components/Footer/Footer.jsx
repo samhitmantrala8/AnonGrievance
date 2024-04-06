@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
-import logoImg from '../../../public/favi.png'
+import logoImg from '/favi.png'
 
 const Footer = () => {
   const socials = [
