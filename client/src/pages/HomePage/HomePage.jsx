@@ -52,7 +52,7 @@ const HomePage = () => {
                 console.log(`${item.label}, ${item.score}`);
                 if ( (item.label === 'POSITIVE' && item.score < 0.5)) {
                     
-                    alert('Please post a positive message');
+                    alert('The text you entered contains inappropriate language, please try again');
                     return;
                                   
                     
@@ -116,7 +116,7 @@ const HomePage = () => {
                 if ((item.label === 'POSITIVE' && item.score < 0.5)) {
                     vflag = false;
                    
-                    alert('Please post a positive comment');
+                    alert('The text you entered contains inappropriate language, please try again');
                     return;
                 }
                 else if((item.label === 'NEGATIVE' && item.score > 0.5) )
