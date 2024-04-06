@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { AiOutlineLike, AiOutlineDislike, AiOutlineDelete, AiFillLike, AiFillDislike } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import { HfInference } from "@huggingface/inference";
 import { useDarkMode } from '../../context/DarkModeContext';
 
@@ -11,22 +11,14 @@ const HF_TOKEN = "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";
 const inference = new HfInference(HF_TOKEN);
 
 const HomePage = () => {
-
     const { logout } = useAuth();
-
     const navigate = useNavigate();
-
-    const handleSignOut = () => {
-        logout();
-
-        navigate('/sign-in');
-    };
-
     const { username } = useAuth();
     const [description, setDescription] = useState('');
     const [media, setMedia] = useState(null);
     const [messages, setMessages] = useState([]);
     const [commentInput, setCommentInput] = useState({});
+    const [shouldRefresh, setShouldRefresh] = useState(false); // State variable for triggering page refresh
     const { isDarkMode } = useDarkMode();  // Using isDarkMode from context
 
     // Fetch all messages
@@ -52,21 +44,20 @@ const HomePage = () => {
             });
             pred.map((item, index) => {
                 console.log(`${item.label}, ${item.score}`);
-                if ( (item.label === 'POSITIVE' && item.score < 0.5)) {
-                    
-                    alert('Please post a positive message');
+                if ((item.label === 'POSITIVE' && item.score < 0.5)) {
+                    alert('The text you entered contains inappropriate language, please try again');
+                    setDescription(''); // Clear the description text
                     return;
-
-
-                }
-                else if ((item.label === 'NEGATIVE' && item.score > 0.5)) {
+                } else if ((item.label === 'NEGATIVE' && item.score > 0.5)) {
                     console.log('')
-                } else {
+                } else if ((item.label === 'NEGATIVE' && item.score < 0.5)) {
                     console.log('Posting message');
                     axios.post('http://localhost:8800/api/messages/post', formData);
                     setDescription('');
                     setMedia(null);
-                    fetchMessages();
+                    setShouldRefresh(true); // Set the state variable to true to trigger page refresh
+                } else if ((item.label === 'POSITIVE' && item.score > 0.5)) {
+                    console.log('')
                 }
             });
 
@@ -116,11 +107,9 @@ const HomePage = () => {
                 console.log(`${item.label}, ${item.score}`);
                 if ((item.label === 'POSITIVE' && item.score < 0.5)) {
                     vflag = false;
-                   
-                    alert('Please post a positive comment');
+                    alert('The text you entered contains inappropriate language, please try again');
                     return;
-                }
-                else if ((item.label === 'NEGATIVE' && item.score > 0.5)) {
+                } else if ((item.label === 'NEGATIVE' && item.score > 0.5)) {
                     console.log('')
                 }
             });
@@ -166,7 +155,13 @@ const HomePage = () => {
 
     useEffect(() => {
         fetchMessages();
-    }, []);
+    }, [shouldRefresh]); // Add shouldRefresh to the dependency array
+
+    useEffect(() => {
+        if (shouldRefresh) {
+            setShouldRefresh(false); // Reset the state variable to false after refresh
+        }
+    }, [shouldRefresh]);
 
     return (
         <div className={`container py-4 mx-auto flex flex-col justify-center items-center h-full w-full ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
@@ -218,19 +213,19 @@ const HomePage = () => {
                                 )}
                             </div>
 
-                            <div className={`flex items-center justify-center mb-4 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-500'} rounded-full`}>
-                                <div className="flex-1 hover:bg-gray-600 transition duration-300 ease-in-out rounded-l-full">
-                                    <button onClick={() => addUpvote(message._id)} className={`text-white flex justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 rounded-l-full w-full`}>
+                            <div className={`flex  items-center justify-center mb-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full`}>
+                                <div className="flex-1  transition duration-300 ease-in-out rounded-l-full">
+                                    <button onClick={() => addUpvote(message._id)} className={`${isDarkMode ? 'text-white' : 'text-black'} flex ${isDarkMode ? 'hover-bg-gray-900' : 'hover:bg-gray-300'} justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 rounded-l-full w-full`}>
                                         <span>{hasUpvoted ? <AiFillLike /> : <AiOutlineLike />}</span><span> {upvotesCount}</span>
                                     </button>
                                 </div>
-                                <div className="flex-1 hover:bg-gray-600 transition duration-300 ease-in-out">
-                                    <button onClick={() => addDownvote(message._id)} className={`text-white flex justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 w-full`}>
+                                <div className="flex-1  transition duration-300 ease-in-out">
+                                    <button onClick={() => addDownvote(message._id)} className={`${isDarkMode ? 'text-white' : 'text-black'} ${isDarkMode ? 'hover-bg-gray-900' : 'hover:bg-gray-300'} flex justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 w-full`}>
                                         <span>{hasDownvoted ? <AiFillDislike /> : <AiOutlineDislike />}</span><span> {downvotesCount}</span>
                                     </button>
                                 </div>
-                                <div className="flex-1 hover:bg-gray-600 transition duration-300 ease-in-out rounded-r-full">
-                                    <button className={`text-white flex justify-center items-center gap-2 text-sm md:text-lg transition duration-300 ease-in-out font-bold py-2 px-4 rounded-r-full w-full`} onClick={() => toggleComments(message._id)}>
+                                <div className="flex-1  transition duration-300 ease-in-out rounded-r-full">
+                                    <button className={`${isDarkMode ? 'text-white' : 'text-black'} flex ${isDarkMode ? 'hover-bg-gray-900' : 'hover:bg-gray-300'} justify-center items-center gap-2 text-sm md:text-lg transition duration-300 ease-in-out font-bold py-2 px-4 rounded-r-full w-full`} onClick={() => toggleComments(message._id)}>
                                         Comments
                                     </button>
                                 </div>
