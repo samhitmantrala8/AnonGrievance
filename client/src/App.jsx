@@ -10,7 +10,7 @@ import SignUpPage from './pages/AuthenticationPages/SignUpPage/SignUpPage';
 import SignInPage from './pages/AuthenticationPages/SignInPage/SignInPage';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
-// import MessageBoard from './pages/tempPage.jsx';
+import { DarkModeProvider } from './context/DarkModeContext';
 
 const Layout = () => {
   return (
@@ -40,10 +40,6 @@ const router = createBrowserRouter([
         path: "/",
         element: <PrivateRoute><HomePage /></PrivateRoute>,
       },
-      // {
-      //   path: "/messages",
-      //   element: <MessageBoard />,
-      // },
     ]
   },
   {
@@ -58,9 +54,11 @@ const router = createBrowserRouter([
 
 const App = () => {
   return (
-    <div>
-      <RouterProvider router={router} />
-    </div>
+    <DarkModeProvider>
+      <div>
+        <RouterProvider router={router} />
+      </div>
+    </DarkModeProvider>
   )
 }
 

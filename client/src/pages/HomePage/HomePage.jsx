@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { AiOutlineLike, AiOutlineDislike, AiOutlineDelete, AiFillLike, AiFillDislike } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom'
 import { HfInference } from "@huggingface/inference";
+import { useDarkMode } from '../../context/DarkModeContext';
 
 const HF_TOKEN = "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";
 
@@ -26,6 +27,7 @@ const HomePage = () => {
     const [media, setMedia] = useState(null);
     const [messages, setMessages] = useState([]);
     const [commentInput, setCommentInput] = useState({});
+    const { isDarkMode } = useDarkMode();  // Using isDarkMode from context
 
     // Fetch all messages
     const fetchMessages = async () => {
@@ -167,26 +169,23 @@ const HomePage = () => {
     }, []);
 
     return (
-        <div className="container py-4 text-white mx-auto flex flex-col justify-center items-center bg-black h-full w-full">
-            {/* <button onClick={handleSignOut}>Sign-out</button> */}
-            {/* <h1 className="text-4xl mb-4">Message Board</h1> */}
-
+        <div className={`container py-4 mx-auto flex flex-col justify-center items-center h-full w-full ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
             {/* Post Message Form */}
-            <div className='flex flex-col justify-center items-center bg-gray-800 p-6 rounded-lg mb-6 md:w-[500px] lg:w-[600px] '>
-                <h2 className="text-2xl mb-4 text-white">Post a Message</h2>
+            <div className={`flex flex-col justify-center items-center p-6 rounded-lg mb-6 md:w-[500px] lg:w-[600px] ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
+                <h2 className={`text-2xl mb-4 ${isDarkMode ? 'text-white' : 'text-black'}`}>Post a Message</h2>
                 <input
                     type="text"
                     placeholder="Enter description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className='border-2 h-8 rounded-md bg-gray-300 px-3 py-2 text-gray-800 w-full mb-4'
+                    className={`border-2 h-8 rounded-md px-3 py-2 w-full mb-4 ${isDarkMode ? 'bg-gray-300 text-gray-800' : 'bg-gray-100 text-gray-700'}`}
                 />
                 <input
                     type="file"
                     onChange={(e) => setMedia(e.target.files[0])}
-                    className='mb-4 text-sm'
+                    className={`mb-4 text-sm ${isDarkMode ? 'text-white' : 'text-black'}`}
                 />
-                <button onClick={postMessage} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <button onClick={postMessage} className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${isDarkMode ? 'text-white' : 'text-black'}`}>
                     Post
                 </button>
             </div>
@@ -202,7 +201,7 @@ const HomePage = () => {
                     const upvotesCount = message.upvotes.length;
                     const downvotesCount = message.downvotes.length;
                     return (
-                        <div key={index} className='bg-gray-800 p-4 rounded-lg mb-4 w-[300px] md:w-[500px] lg:w-[600px]'>
+                        <div key={index} className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} p-4 rounded-lg mb-4 w-[300px] md:w-[500px] lg:w-[600px] ${isDarkMode ? 'text-white' : 'text-black'}`}>
                             <h3 className="text-sm mb-2">{message.username}</h3>
                             <p className="mb-2 text-xl">{message.description}</p>
 
@@ -219,7 +218,7 @@ const HomePage = () => {
                                 )}
                             </div>
 
-                            <div className="flex items-center justify-center mb-4 bg-gray-900 rounded-full">
+                            <div className={`flex items-center justify-center mb-4 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-500'} rounded-full`}>
                                 <div className="flex-1 hover:bg-gray-600 transition duration-300 ease-in-out rounded-l-full">
                                     <button onClick={() => addUpvote(message._id)} className={`text-white flex justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 rounded-l-full w-full`}>
                                         <span>{hasUpvoted ? <AiFillLike /> : <AiOutlineLike />}</span><span> {upvotesCount}</span>
@@ -249,8 +248,8 @@ const HomePage = () => {
                             </button>
                             {/* Display comments */}
                             {selectedMessageComments[message._id] && selectedMessageComments[message._id].length > 0 && selectedMessageComments[message._id].map((comment, commentIndex) => (
-                                <div key={commentIndex} className='bg-gray-900 p-2 rounded-lg mb-2 mt-3'>
-                                    <p className='text-white'>{comment.text}</p>
+                                <div key={commentIndex} className={`${isDarkMode ? 'bg-gray-900' : 'bg-gray-400 text-black'} p-2 rounded-lg mb-2 mt-3`}>
+                                    <p className={`text-white`}>{comment.text}</p>
                                     <small className='text-gray-600'>Commented by: {comment.username}</small>
                                 </div>
                             ))}
