@@ -34,7 +34,7 @@ export const registerUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        console.log({ email, password })
+        // console.log({ email, password })
 
         // Encrypt entered email and password
         const { encryptedData: encryptedEmail, key: emailKey, iv: emailIv } = encryptData(email);

@@ -123,9 +123,9 @@ const HomePage = () => {
     }, []);
 
     return (
-        <div className="container text-white mx-auto p-6 flex flex-col justify-center items-center bg-black h-full w-full">
-            <button onClick={handleSignOut}>Sign-out</button>
-            <h1 className="text-4xl mb-4">Message Board</h1>
+        <div className="container py-4 text-white mx-auto flex flex-col justify-center items-center bg-black h-full w-full">
+            {/* <button onClick={handleSignOut}>Sign-out</button> */}
+            {/* <h1 className="text-4xl mb-4">Message Board</h1> */}
 
             {/* Post Message Form */}
             <div className='flex flex-col justify-center items-center bg-gray-800 p-6 rounded-lg mb-6 md:w-[500px] lg:w-[600px]'>
@@ -135,7 +135,7 @@ const HomePage = () => {
                     placeholder="Enter description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className='border-2 rounded-md bg-gray-300 px-3 py-2 text-gray-800 w-full mb-4'
+                    className='border-2 h-8 rounded-md bg-gray-300 px-3 py-2 text-gray-800 w-full mb-4'
                 />
                 <input
                     type="file"
@@ -148,13 +148,13 @@ const HomePage = () => {
             </div>
 
             {/* Display Messages */}
-            <div className='md:w-[500px]'>
+            <div className='md:w-[500px] flex justify-center items-center flex-col'>
                 {/* <h2 className="text-2xl mb-4 flex flex-col items-center justify-center">Messages</h2> */}
                 {messages.map((message, index) => {
                     const hasUpvoted = message.upvotes.includes(username);
                     const hasDownvoted = message.downvotes.includes(username);
                     return (
-                        <div key={index} className='bg-gray-800 p-4 rounded-lg mb-4'>
+                        <div key={index} className='bg-gray-800 p-4 rounded-lg mb-4 w-[300px] md:w-[500px] lg:w-[600px]'>
                             <h3 className="text-sm mb-2">{message.username}</h3>
                             <p className="mb-2 text-xl">{message.description}</p>
 
