@@ -16,6 +16,7 @@ const Layout = () => {
   return (
     <>
       <Navbar />
+      <div className="pt-20"></div>
       <Outlet />
       <Footer />
     </>
