@@ -129,7 +129,15 @@ const HomePage = () => {
 
             {/* Post Message Form */}
             <div className='flex flex-col justify-center items-center bg-gray-800 p-6 rounded-lg mb-6 md:w-[500px] lg:w-[600px]'>
-                <h2 className="text-2xl mb-4 text-white">Post a Message</h2>
+                <h3 className="text-xl md:text-2xl mb-2 font-mono" style={{
+                    backgroundImage: 'linear-gradient(to right, red, orange, yellow, green, )',
+                    WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text',
+                    color: 'transparent'
+                }}>
+                    Post a Complaint
+                </h3>
+
                 <input
                     type="text"
                     placeholder="Enter description"
@@ -157,7 +165,15 @@ const HomePage = () => {
                     const downvotesCount = message.downvotes.length;
                     return (
                         <div key={index} className='bg-gray-800 p-4 rounded-lg mb-4 w-[300px] md:w-[500px] lg:w-[600px]'>
-                            <h3 className="text-sm mb-2">{message.username}</h3>
+                            <h3 className="text-sm mb-2 font-mono" style={{
+                                backgroundImage: 'linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)',
+                                WebkitBackgroundClip: 'text',
+                                backgroundClip: 'text',
+                                color: 'transparent'
+                            }}>
+                                {message.username}
+                            </h3>
+
                             <p className="mb-2 text-md md:text-xl">{message.description}</p>
 
                             <div className='w-full'>
@@ -198,12 +214,12 @@ const HomePage = () => {
                                 onChange={(e) => setCommentInput({ ...commentInput, [message._id]: e.target.value })}
                                 className='border-2 h-7 md:h-11 rounded-md bg-gray-300 px-3 py-2 text-gray-800 w-full mb-2'
                             />
-                            <button onClick={() => addComment(message._id)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 md:py-2 px-4 text-sm md:text-md rounded">
+                            <button onClick={() => addComment(message._id)} className="bg-blue-500 font-serif hover:bg-blue-700 text-white font-bold py-1 md:py-2 px-4 text-sm md:text-md rounded">
                                 Add Comment
                             </button>
                             {/* Display comments */}
                             {selectedMessageComments[message._id] && selectedMessageComments[message._id].length > 0 && selectedMessageComments[message._id].map((comment, commentIndex) => (
-                                <div key={commentIndex} className='bg-gray-900 p-2 rounded-lg mb-2 mt-3'>
+                                <div key={commentIndex} className='bg-gray-900 p-2 rounded-lg mb-2 mt-3 font-mono'>
                                     <p className='text-white'>{comment.text}</p>
                                     <small className='text-gray-600'>Commented by: {comment.username}</small>
                                 </div>

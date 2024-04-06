@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import logoImg from '../../../public/favi.png'
 
 function Navbar() {
 
@@ -25,16 +26,27 @@ function Navbar() {
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         {/* <a href="https://flowbite.com/" className="flex items-center space-x-3 rtl:space-x-reverse">
           <img src="https://flowbite.com/docs/images/logo.svg" className="h-8" alt="Flowbite Logo" /> */}
-        <span className="self-center text-sm md:text-xl font-semibold whitespace-nowrap dark:text-white">AnonGrievance</span>
+        <div className='flex justify-center items-center gap-2 cursor-pointer'>
+          <img src={logoImg} alt="logo" className='h-6 md:h-9' />
+          <span className="self-center text-sm md:text-xl font-semibold whitespace-nowrap dark:text-white font-serif">AnonGrievance</span>
+        </div>
         {/* </a> */}
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
           {username ? (
             <div className='flex justify-center items-center gap-3'>
-              <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-400">{username}</span>
+              <h3 className="hidden md:block text-lg mb-2 font-mono" style={{
+                backgroundImage: 'linear-gradient(to right, red, orange, yellow, green, violet)',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent'
+              }}>
+                {username}
+              </h3>
+
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-[10px] md:text-sm px-4 py-2 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                className="text-white font-serif font-semibold bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-[10px] md:text-sm px-4 py-2 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
               >
                 Sign Out
               </button>
