@@ -20,6 +20,9 @@ const messageSchema = new mongoose.Schema({
     comments: [commentSchema],
 }, { timestamps: true });
 
+// Set TTL index on createdAt field
+messageSchema.index({ createdAt: 1 }, { expireAfterSeconds: 48 * 60 * 60 });  // 48 hours * 60 minutes * 60 seconds
+
 const Message = mongoose.model('Message', messageSchema);
 
 export default Message;
