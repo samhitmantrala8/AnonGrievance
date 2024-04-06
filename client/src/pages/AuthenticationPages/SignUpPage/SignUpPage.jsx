@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDarkMode } from '../../../context/DarkModeContext';  // Importing the dark mode context
 
 const SignUpPage = () => {
     const { register, logout } = useAuth();
@@ -8,6 +9,7 @@ const SignUpPage = () => {
     const [password, setPassword] = useState('');
 
     const navigate = useNavigate();
+    const { isDarkMode } = useDarkMode();  // Using isDarkMode from context
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,9 +31,9 @@ const SignUpPage = () => {
     };
 
     return (
-        <div className="h-[100vh] bg-black text-white items-center flex justify-center px-5 lg:px-0">
-            <div className="max-w-screen-xl bg-gray-800 border shadow sm:rounded-lg flex justify-center flex-1">
-                <div className="flex-1 bg-blue-900 text-center hidden md:flex">
+        <div className={`h-[100vh] ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'} items-center flex justify-center px-5 lg:px-0`}>
+            <div className={`max-w-screen-xl ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} border shadow sm:rounded-lg flex justify-center flex-1`}>
+                <div className="flex-1 text-center hidden md:flex">
                     <div
                         className="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
                         style={{
@@ -42,7 +44,7 @@ const SignUpPage = () => {
                 <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
                     <div className="flex flex-col items-center">
                         <div className="text-center">
-                            <h1 className="text-2xl xl:text-4xl font-extrabold text-blue-900">
+                            <h1 className={`text-2xl xl:text-4xl font-extrabold ${isDarkMode ? 'text-blue-900' : 'text-blue-700'}`}>
                                 Student Sign up
                             </h1>
                             <p className="text-[12px]">
@@ -52,7 +54,7 @@ const SignUpPage = () => {
                         <div className="w-full flex-1 mt-8">
                             <div className="mx-auto max-w-xs flex flex-col gap-4">
                                 <input
-                                    className="w-full px-5 py-3 rounded-lg text-black font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+                                    className={`w-full px-5 py-3 rounded-lg font-medium border placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white ${isDarkMode ? 'text-black bg-gray-100 border-gray-200' : 'text-white bg-gray-800 border-gray-600'}`}
                                     type="email"
                                     placeholder="Enter your email"
                                     value={email}
@@ -60,14 +62,14 @@ const SignUpPage = () => {
                                     required
                                 />
                                 <input
-                                    className="w-full px-5 py-3 rounded-lg text-black font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+                                    className={`w-full px-5 py-3 rounded-lg font-medium border placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white ${isDarkMode ? 'text-black bg-gray-100 border-gray-200' : 'text-white bg-gray-800 border-gray-600'}`}
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                     placeholder="Password"
                                 />
-                                <button className="mt-5 tracking-wide font-semibold bg-blue-900 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none" onClick={handleSubmit}>
+                                <button className={`mt-5 tracking-wide font-semibold w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none ${isDarkMode ? 'bg-blue-900 text-gray-100 hover:bg-indigo-700' : 'bg-blue-900 text-white hover:bg-indigo-700'}`} onClick={handleSubmit}>
                                     <svg
                                         className="w-6 h-6 -ml-2"
                                         fill="none"
@@ -82,7 +84,7 @@ const SignUpPage = () => {
                                     </svg>
                                     <span className="ml-3">Sign Up</span>
                                 </button>
-                                <p className="mt-6 text-xs text-white text-center">
+                                <p className={`mt-6 text-xs text-center ${isDarkMode ? 'text-white' : 'text-black'}`}>
                                     Already have an account?{" "}
                                     <Link
                                         to="/sign-in">
