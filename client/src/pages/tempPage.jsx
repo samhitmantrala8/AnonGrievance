@@ -1,21 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useAuth } from '../../context/AuthContext';
-import { AiOutlineLike, AiOutlineDislike, AiOutlineDelete, AiFillLike, AiFillDislike } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext';
+import { AiOutlineUp, AiOutlineDown, AiOutlineLike, AiOutlineDislike, AiOutlineDelete, AiFillLike, AiFillDislike } from 'react-icons/ai';
 
-const HomePage = () => {
-
-    const { logout } = useAuth();
-
-    const navigate = useNavigate();
-
-    const handleSignOut = () => {
-        logout();
-
-        navigate('/sign-in');
-    };
-
+const MessageBoard = () => {
     const { username } = useAuth();
     const [description, setDescription] = useState('');
     const [media, setMedia] = useState(null);
@@ -124,7 +112,6 @@ const HomePage = () => {
 
     return (
         <div className="container text-white mx-auto p-6 flex flex-col justify-center items-center bg-black h-full w-full">
-            <button onClick={handleSignOut}>Sign-out</button>
             <h1 className="text-4xl mb-4">Message Board</h1>
 
             {/* Post Message Form */}
@@ -211,4 +198,6 @@ const HomePage = () => {
 
 };
 
-export default HomePage;
+export default MessageBoard;
+
+

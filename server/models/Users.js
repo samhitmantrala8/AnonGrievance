@@ -10,6 +10,11 @@ const userSchema = new mongoose.Schema({
     passwordIv: { type: String, required: true },
 });
 
+userSchema.pre('remove', async function(next) {
+    await Message.deleteMany({ username: this.username });
+    next();
+});
+
 const User = mongoose.model('User', userSchema);
 
 export default User;

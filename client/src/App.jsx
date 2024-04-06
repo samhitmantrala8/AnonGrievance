@@ -1,17 +1,18 @@
-import React from 'react'
+import React from 'react';
 import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
+  Navigate
 } from "react-router-dom";
 import HomePage from './pages/HomePage/HomePage.jsx';
 import SignUpPage from './pages/AuthenticationPages/SignUpPage/SignUpPage';
 import SignInPage from './pages/AuthenticationPages/SignInPage/SignInPage';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
+// import MessageBoard from './pages/tempPage.jsx';
 
 const Layout = () => {
-
   return (
     <>
       <Navbar />
@@ -19,7 +20,14 @@ const Layout = () => {
       <Footer />
     </>
   )
+};
 
+const PrivateRoute = ({ children }) => {
+  if (!localStorage.getItem('username')) {
+    return <Navigate to="/sign-in" />;
+  }
+
+  return children;
 };
 
 const router = createBrowserRouter([
@@ -29,8 +37,12 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <HomePage />,
+        element: <PrivateRoute><HomePage /></PrivateRoute>,
       },
+      // {
+      //   path: "/messages",
+      //   element: <MessageBoard />,
+      // },
     ]
   },
   {
@@ -43,7 +55,6 @@ const router = createBrowserRouter([
   },
 ]);
 
-
 const App = () => {
   return (
     <div>
@@ -52,4 +63,4 @@ const App = () => {
   )
 }
 
-export default App
+export default App;

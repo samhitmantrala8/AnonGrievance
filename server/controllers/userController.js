@@ -34,6 +34,8 @@ export const registerUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        console.log({ email, password })
+
         // Encrypt entered email and password
         const { encryptedData: encryptedEmail, key: emailKey, iv: emailIv } = encryptData(email);
         const { encryptedData: encryptedPassword, key: passwordKey, iv: passwordIv } = encryptData(password);
@@ -76,7 +78,7 @@ export const loginUser = async (req, res) => {
         });
 
         if (!user) {
-            return res.status(400).json({ message: 'Email not found' });
+            throw new Error('Email not found');
         }
 
         // Decrypt stored password
@@ -84,26 +86,31 @@ export const loginUser = async (req, res) => {
 
         // Check if the decrypted password matches the entered password
         if (decryptedPassword !== password) {
-            return res.status(400).json({ message: 'Invalid password' });
+            throw new Error('Invalid password');
         }
 
         // Generate JWT token
-        const token = jwt.sign({ userId: user._id }, 'your_secret_key', { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id }, "secretkey");
 
-        // Store token in local storage
-        // localStorage.setItem('token', token);
-
-        res.status(200).json({ message: 'User logged in successfully', username: user.username, token });
+        // Storing the token in a cookie
+        res.cookie("accessToken", token, {
+            httpOnly: true,
+        }).json({ message: 'User logged in successfully', username: user.username });
+        
     } catch (error) {
-        res.status(500).json({ message: 'Failed to login user', error: error.message });
+        res.status(400).json({ message: error.message });
     }
 };
 
 // Logout User
 export const logoutUser = async (req, res) => {
     try {
-        // Remove token from local storage
-        localStorage.removeItem('token');
+        // Clear the accessToken cookie
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        });
 
         res.status(200).json({ message: 'User logged out successfully' });
     } catch (error) {
