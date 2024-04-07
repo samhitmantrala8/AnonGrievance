@@ -34,7 +34,7 @@ const SignInPage = () => {
 
     return (
         <div className={`flex text-white items-center justify-center h-screen w-full px-5 sm:px-0 ${isDarkMode ? 'bg-black' : 'bg-white'}`}>
-            <div className={`flex ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} rounded-lg shadow-lg border overflow-hidden max-w-sm lg:max-w-4xl w-full`}>
+            <div className={`flex ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} rounded-lg shadow-lg  overflow-hidden max-w-sm lg:max-w-4xl w-full`}>
                 <div
                     className="hidden md:block lg:w-1/2 bg-cover"
                     style={{
@@ -42,10 +42,10 @@ const SignInPage = () => {
                     }}
                 ></div>
                 <div className="w-full p-8 lg:w-1/2">
-                    <p className={`text-2xl xl:text-4xl font-extrabold ${isDarkMode ? 'text-blue-900' : 'text-blue-700'}`}>Welcome back!</p>
+                    <p className={`text-2xl xl:text-4xl text-center font-extrabold ${isDarkMode ? 'text-white' : 'text-blue-700'}`}>Welcome back!</p>
                     {error && <p className="text-red-500 text-center mb-4">{error}</p>}
                     <div className="mt-4">
-                        <label className="block  text-sm font-bold mb-2">
+                        <label className={`text-sm mb-2 block ${isDarkMode ? 'text-white' : 'text-blue-700'}`}>
                             Email Address
                         </label>
                         <input
@@ -58,7 +58,7 @@ const SignInPage = () => {
                     </div>
                     <div className="mt-4 flex flex-col justify-between">
                         <div className="flex justify-between">
-                            <label className="block text-sm font-bold mb-2">
+                            <label className={`text-sm mb-2 block ${isDarkMode ? 'text-white' : 'text-blue-700'}`}>
                                 Password
                             </label>
                         </div>
@@ -81,7 +81,7 @@ const SignInPage = () => {
                             className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-700'} capitalize text-center w-full`}
                         >
                             Don&apos;t have any account yet?
-                            <span className="text-blue-700"> Sign Up</span>
+                            <span className={` ${isDarkMode ? 'text-white' : 'text-gray-700'} `}> Sign Up</span>
                         </Link>
                     </div>
                 </div>

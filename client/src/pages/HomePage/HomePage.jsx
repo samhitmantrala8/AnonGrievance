@@ -1,25 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import { AiOutlineLike, AiOutlineDislike, AiOutlineDelete, AiFillLike, AiFillDislike } from 'react-icons/ai';
+import { AiOutlineLike, AiOutlineDislike, AiFillLike, AiFillDislike } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import { HfInference } from "@huggingface/inference";
 import { useDarkMode } from '../../context/DarkModeContext';
+import WarningPage from './WarningPage'; // Import the warning page component
 
 const HF_TOKEN = "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";
 
 const inference = new HfInference(HF_TOKEN);
 
 const HomePage = () => {
-    const { logout } = useAuth();
+    const { logout, username } = useAuth();
     const navigate = useNavigate();
-    const { username } = useAuth();
     const [description, setDescription] = useState('');
     const [media, setMedia] = useState(null);
     const [messages, setMessages] = useState([]);
     const [commentInput, setCommentInput] = useState({});
     const [shouldRefresh, setShouldRefresh] = useState(false); // State variable for triggering page refresh
     const { isDarkMode } = useDarkMode();  // Using isDarkMode from context
+    const [showWarning, setShowWarning] = useState(false);
+    const [warningMessage, setWarningMessage] = useState('');
+    const [selectedMessageComments, setSelectedMessageComments] = useState({}); // Initialize selectedMessageComments with an empty object
+
 
     // Fetch all messages
     const fetchMessages = async () => {
@@ -45,7 +49,7 @@ const HomePage = () => {
             pred.map((item, index) => {
                 console.log(`${item.label}, ${item.score}`);
                 if ((item.label === 'POSITIVE' && item.score < 0.5)) {
-                    alert('The text you entered contains inappropriate language, please try again');
+                    handleWarning('Please post a positive message');
                     setDescription(''); // Clear the description text
                     return;
                 } else if ((item.label === 'NEGATIVE' && item.score > 0.5)) {
@@ -107,7 +111,7 @@ const HomePage = () => {
                 console.log(`${item.label}, ${item.score}`);
                 if ((item.label === 'POSITIVE' && item.score < 0.5)) {
                     vflag = false;
-                    alert('The text you entered contains inappropriate language, please try again');
+                    handleWarning('Please post a positive message');
                     return;
                 } else if ((item.label === 'NEGATIVE' && item.score > 0.5)) {
                     console.log('')
@@ -123,11 +127,14 @@ const HomePage = () => {
         }
     };
 
+    const handleWarning = (message) => {
+        setWarningMessage(message);
+        setShowWarning(true);
+    };
 
-    const [commentInputs, setCommentInputs] = useState({});
-    const [selectedMessageComments, setSelectedMessageComments] = useState({});
-
-    // ...
+    const hideWarning = () => {
+        setShowWarning(false);
+    };
 
     const fetchComments = async (id) => {
         try {
@@ -151,7 +158,6 @@ const HomePage = () => {
             });
         }
     };
-
 
     useEffect(() => {
         fetchMessages();
@@ -187,7 +193,6 @@ const HomePage = () => {
 
             {/* Display Messages */}
             <div className='md:w-[500px] flex justify-center items-center flex-col'>
-                {/* <h2 className="text-2xl mb-4 flex flex-col items-center justify-center">Messages</h2> */}
                 {messages.map((message, index) => {
                     const hasUpvoted = message.upvotes.includes(username);
                     const hasDownvoted = message.downvotes.includes(username);
@@ -252,6 +257,8 @@ const HomePage = () => {
                     );
                 })}
             </div>
+            {/* Render the warning page if showWarning is true */}
+            {showWarning && <WarningPage message={warningMessage} onClose={hideWarning} />}
         </div>
     );
 
