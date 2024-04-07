@@ -24,7 +24,6 @@ const HomePage = () => {
     const [warningMessage, setWarningMessage] = useState('');
     const [selectedMessageComments, setSelectedMessageComments] = useState({}); // Initialize selectedMessageComments with an empty object
 
-
     // Fetch all messages
     const fetchMessages = async () => {
         try {
@@ -127,9 +126,17 @@ const HomePage = () => {
         }
     };
 
+    // const handleWarning = (message) => {
+    //     setWarningMessage(message);
+    //     setShowWarning(true);
+    //     // Clear description on showing warning
+    //     setDescription('');
+    // };
+
     const handleWarning = (message) => {
         setWarningMessage(message);
         setShowWarning(true);
+        setCommentInput({}); // Clear the comment input state
     };
 
     const hideWarning = () => {

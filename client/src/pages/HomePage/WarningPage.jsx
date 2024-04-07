@@ -21,7 +21,7 @@ const WarningPage = ({ message, onClose }) => {
                 <div className="mt-2">
                   <p className="text-sm text-gray-400">{message}</p>
                   <p className="text-xs text-red-400 mt-1">
-                    This content may be hurtful and violates our policy. It contains abusive language.
+                    This content may be hurtful and violates our policy.
                   </p>
                 </div>
               </div>
