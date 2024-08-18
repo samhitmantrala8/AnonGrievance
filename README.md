@@ -1,4 +1,4 @@
-# Anonymous Complaint Chat Bot
+# Anonymous Complaint Platform
 
 ## Overview
 The Anonymous Complaint Chat Bot is a project developed for Hackbyte 2.0, the annual hackathon organized by IIIT Jabalpur. The aim of this project is to provide a platform where users can submit complaints or grievances anonymously, along with supporting evidence, without unveiling their identities. 
