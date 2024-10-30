@@ -10,6 +10,7 @@ import SignUpPage from './pages/AuthenticationPages/SignUpPage/SignUpPage';
 import SignInPage from './pages/AuthenticationPages/SignInPage/SignInPage';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
+import PostPage from './pages/HomePage/PostingPage.jsx';
 import { DarkModeProvider } from './context/DarkModeContext';
 
 const Layout = () => {
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
   {
     path: "/sign-up",
     element: <SignUpPage />
+  },
+  {
+    path: "/posting",
+    element: <PostPage />
   },
   {
     path: "/sign-in",

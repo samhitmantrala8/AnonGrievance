@@ -7,7 +7,7 @@ import { HfInference } from "@huggingface/inference";
 import { useDarkMode } from '../../context/DarkModeContext';
 import WarningPage from './WarningPage'; // Import the warning page component
 
-const HF_TOKEN = "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";
+const HF_TOKEN = "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";
 
 const inference = new HfInference(HF_TOKEN);
 
@@ -22,7 +22,8 @@ const HomePage = () => {
     const { isDarkMode } = useDarkMode();  // Using isDarkMode from context
     const [showWarning, setShowWarning] = useState(false);
     const [warningMessage, setWarningMessage] = useState('');
-    const [selectedMessageComments, setSelectedMessageComments] = useState({}); // Initialize selectedMessageComments with an empty object
+    const [selectedMessageComments, setSelectedMessageComments] = useState({});
+    const [currentPage, setCurrentPage] = useState(1);
 
     // Fetch all messages
     const fetchMessages = async () => {
@@ -34,7 +35,6 @@ const HomePage = () => {
         }
     };
 
-    // Post a new message
     const postMessage = async () => {
         try {
             const formData = new FormData();
@@ -42,7 +42,7 @@ const HomePage = () => {
             formData.append('description', description);
             formData.append('media', media);
             const pred = await inference.textClassification({
-                model: 'Utkarsh03/hb_111',
+                model: 'samhitmantrala/hk111',
                 inputs: description
             });
             pred.map((item, index) => {
@@ -69,17 +69,22 @@ const HomePage = () => {
         }
     };
 
-    // Delete a message by ID
-    const deleteMessage = async (id) => {
+    const deleteMessage = async (messageId) => {
         try {
-            await axios.delete(`http://localhost:8800/api/messages/${id}`);
-            fetchMessages();
+            const response = await axios.delete(`http://localhost:8800/api/messages/${messageId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`, // Ensure you send the token
+                },
+            });
+            console.log(response.data);
+            fetchMessages(); // Fetch messages after deletion
+            // Handle successful deletion, e.g., update the state to remove the deleted message
         } catch (error) {
             console.error('Error deleting message:', error);
         }
     };
 
-    // Add upvote to a message
+
     const addUpvote = async (id) => {
         try {
             await axios.put(`http://localhost:8800/api/messages/upvote/${id}`, { username });
@@ -89,7 +94,6 @@ const HomePage = () => {
         }
     };
 
-    // Add downvote to a message
     const addDownvote = async (id) => {
         try {
             await axios.put(`http://localhost:8800/api/messages/downvote/${id}`, { username });
@@ -102,7 +106,7 @@ const HomePage = () => {
     const addComment = async (id) => {
         try {
             const pred = await inference.textClassification({
-                model: 'Utkarsh03/hb_111',
+                model: 'samhitmantrala/hk111',
                 inputs: commentInput[id]
             });
             let vflag = true;
@@ -120,23 +124,16 @@ const HomePage = () => {
                 await axios.put(`http://localhost:8800/api/messages/comment/${id}`, { username, text: commentInput[id] });
                 fetchMessages();
                 setCommentInput({ ...commentInput, [id]: '' });
-            } // Clear the comment input after adding comment
+            }
         } catch (error) {
             console.error('Error adding comment:', error);
         }
     };
 
-    // const handleWarning = (message) => {
-    //     setWarningMessage(message);
-    //     setShowWarning(true);
-    //     // Clear description on showing warning
-    //     setDescription('');
-    // };
-
     const handleWarning = (message) => {
         setWarningMessage(message);
         setShowWarning(true);
-        setCommentInput({}); // Clear the comment input state
+        setCommentInput({});
     };
 
     const hideWarning = () => {
@@ -176,73 +173,33 @@ const HomePage = () => {
         }
     }, [shouldRefresh]);
 
+    const complaintsPerPage = 6;
+    const startIndex = (currentPage - 1) * complaintsPerPage;
+    const currentMessages = messages.slice(startIndex, startIndex + complaintsPerPage);
+
     return (
-        <div className={`container py-4 mx-auto flex flex-col justify-center items-center h-full w-full ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
-            {/* Post Message Form */}
-            <div className={`flex flex-col justify-center items-center p-6 rounded-lg mb-6 md:w-[500px] lg:w-[600px] ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
-                <h2 className={`text-2xl mb-4 ${isDarkMode ? 'text-white' : 'text-black'}`}>Post a Message</h2>
-                <input
-                    type="text"
-                    placeholder="Enter description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className={`border-2 h-8 rounded-md px-3 py-2 w-full mb-4 ${isDarkMode ? 'bg-gray-300 text-gray-800' : 'bg-gray-100 text-gray-700'}`}
-                />
-                <input
-                    type="file"
-                    onChange={(e) => setMedia(e.target.files[0])}
-                    className={`mb-4 text-sm ${isDarkMode ? 'text-white' : 'text-black'}`}
-                />
-                <button onClick={postMessage} className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${isDarkMode ? 'text-white' : 'text-black'}`}>
-                    Post
-                </button>
-            </div>
-
-            {/* Display Messages */}
-            <div className='md:w-[500px] flex justify-center items-center flex-col'>
-                {messages.map((message, index) => {
-                    const hasUpvoted = message.upvotes.includes(username);
-                    const hasDownvoted = message.downvotes.includes(username);
-
-                    // Count the number of upvotes and downvotes
-                    const upvotesCount = message.upvotes.length;
-                    const downvotesCount = message.downvotes.length;
-                    return (
-                        <div key={index} className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} p-4 rounded-lg mb-4 w-[300px] md:w-[500px] lg:w-[600px] ${isDarkMode ? 'text-white' : 'text-black'}`}>
+        <div className={`min-h-screen flex flex-col ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
+            <div className="flex-grow flex flex-col items-center justify-start p-4">
+                <h2 className="text-2xl mb-4 text-center">Current/Ongoing Issues</h2>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4 w-full'>
+                    {currentMessages.map((message, index) => (
+                        <div key={index} className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} p-4 rounded-lg w-full ${isDarkMode ? 'text-white' : 'text-black'}`}>
                             <h3 className="text-sm mb-2">{message.username}</h3>
                             <p className="mb-2 text-xl">{message.description}</p>
-
-                            <div className='w-full'>
-                                {message.media && (
-                                    message.media.endsWith('.mp4') ? (
-                                        <video controls className='w-full mb-2' style={{ maxWidth: '100%' }}>
-                                            <source src={`http://localhost:8800/uploads/${message.media}`} type="video/mp4" />
-                                            Your browser does not support the video tag.
-                                        </video>
-                                    ) : (
-                                        <img className='w-full h-auto mb-2 object-cover' src={`http://localhost:8800/uploads/${message.media}`} alt="Message Media" />
-                                    )
-                                )}
-                            </div>
-
-                            <div className={`flex  items-center justify-center mb-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full`}>
-                                <div className="flex-1  transition duration-300 ease-in-out rounded-l-full">
-                                    <button onClick={() => addUpvote(message._id)} className={`${isDarkMode ? 'text-white' : 'text-black'} flex ${isDarkMode ? 'hover:bg-gray-900' : 'hover:bg-gray-300'} justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 rounded-l-full w-full`}>
-                                        <span>{hasUpvoted ? <AiFillLike /> : <AiOutlineLike />}</span><span> {upvotesCount}</span>
-                                    </button>
-                                </div>
-                                <div className="flex-1  transition duration-300 ease-in-out">
-                                    <button onClick={() => addDownvote(message._id)} className={`${isDarkMode ? 'text-white' : 'text-black'} ${isDarkMode ? 'hover:bg-gray-900' : 'hover:bg-gray-300'} flex justify-center items-center gap-2 text-sm md:text-xl transition duration-300 ease-in-out font-bold py-2 px-4 w-full`}>
-                                        <span>{hasDownvoted ? <AiFillDislike /> : <AiOutlineDislike />}</span><span> {downvotesCount}</span>
-                                    </button>
-                                </div>
-                                <div className="flex-1  transition duration-300 ease-in-out rounded-r-full">
-                                    <button className={`${isDarkMode ? 'text-white' : 'text-black'} flex ${isDarkMode ? 'hover:bg-gray-900' : 'hover:bg-gray-300'} justify-center items-center gap-2 text-sm md:text-lg transition duration-300 ease-in-out font-bold py-2 px-4 rounded-r-full w-full`} onClick={() => toggleComments(message._id)}>
-                                        Comments
-                                    </button>
-                                </div>
-                            </div>
-
+    
+                            {message.media && (
+                                message.media.endsWith('.mp4') ? (
+                                    <video controls className='w-full mb-2'>
+                                        <source src={`http://localhost:8800/uploads/${message.media}`} type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                ) : (
+                                    <img className='w-full h-auto mb-2 object-cover' src={`http://localhost:8800/uploads/${message.media}`} alt="Message Media" />
+                                )
+                            )}
+    
+                            
+    
                             <input
                                 type="text"
                                 placeholder="Add comment"
@@ -250,25 +207,54 @@ const HomePage = () => {
                                 onChange={(e) => setCommentInput({ ...commentInput, [message._id]: e.target.value })}
                                 className='border-2 rounded-md bg-gray-300 px-3 py-2 text-gray-800 w-full mb-2'
                             />
+                            
+                            <button onClick={() => toggleComments(message._id)} className="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-2 rounded">
+                                Show Comments
+                            </button>
+                            <span className="mx-2"></span>
                             <button onClick={() => addComment(message._id)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Add Comment
                             </button>
-                            {/* Display comments */}
-                            {selectedMessageComments[message._id] && selectedMessageComments[message._id].length > 0 && selectedMessageComments[message._id].map((comment, commentIndex) => (
+    
+                            {selectedMessageComments[message._id] && selectedMessageComments[message._id].map((comment, commentIndex) => (
                                 <div key={commentIndex} className={`${isDarkMode ? 'bg-gray-700 border-white' : 'bg-gray-300 border-black'} p-2 rounded-lg mb-2 mt-3 border-2`}>
-                                    <p className={`${isDarkMode ? 'text-white' : 'text-black'}`}>{comment.text}</p>
-                                    <small className='text-gray-900'>Commented by: {comment.username}</small>
+                                    <p>{comment.text}</p>
+                                    <small>Commented by: {comment.username}</small>
                                 </div>
                             ))}
                         </div>
-                    );
-                })}
+                    ))}
+                </div>
+    
+                <div className="flex justify-between items-center mt-4 w-full px-2">
+                    <button
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        className="bg-gray-500 text-white py-2 px-4 rounded disabled:bg-gray-400"
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </button>
+                    <span className="px-2">Page {currentPage}</span>
+                    <button
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(messages.length / complaintsPerPage)))}
+                        className="bg-gray-500 text-white py-2 px-4 rounded disabled:bg-gray-400"
+                        disabled={currentPage === Math.ceil(messages.length / complaintsPerPage)}
+                    >
+                        Next
+                    </button>
+                </div>
+                {showWarning && (
+                    <WarningPage message={warningMessage} onClose={hideWarning} />
+                )}
             </div>
-            {/* Render the warning page if showWarning is true */}
-            {showWarning && <WarningPage message={warningMessage} onClose={hideWarning} />}
+            <button
+                onClick={() => navigate('/posting')}
+                className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-700"
+            >
+                Create a Post
+            </button>
         </div>
     );
-
-};
-
+}
+    
 export default HomePage;
