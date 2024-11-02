@@ -89,7 +89,7 @@ const PostPage = () => {
                     <button onClick={postMessage} className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded">
                         Post
                     </button>
-                    <p className="mt-4 text-sm text-gray-600">Note that your post will be automatically deleted after 72 hours.</p>
+                    <p className="mt-4 text-sm text-gray-600">Note that your post will be automatically deleted after 48 hours.</p>
                 </div>
                 {showWarning && <WarningPage warningMessage={warningMessage} onClose={hideWarning} />}
             </div>
